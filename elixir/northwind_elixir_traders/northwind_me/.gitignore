@@ -20,7 +20,10 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-northwind_me-*.tar
+northwind_book-*.tar
 
 
-northwind_me_repo.db
+# SQLite databases
+*.db
+*.db-wal
+*.db-shm

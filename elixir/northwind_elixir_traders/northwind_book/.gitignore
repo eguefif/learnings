@@ -23,4 +23,7 @@ erl_crash.dump
 northwind_book-*.tar
 
 
-northwind_me_repo.db
+# SQLite databases
+*.db
+*.db-wal
+*.db-shm
