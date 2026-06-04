@@ -4,7 +4,9 @@ defmodule PentoWeb.WrongLive do
   def render(assigns) do
     ~H"""
     <main class="px-4 py-20 sm:px-6 lg:px-8">
-      <h1 class="mb-4 text-4xl font-extrabold">Your score: {@score}</h1>
+      <h1 class="mb-4 text-4xl font-extrabold">
+        Hey {@current_user.email}. Here is your score: {@score}
+      </h1>
       <h2>
         {@message}
       </h2>
@@ -29,12 +31,15 @@ defmodule PentoWeb.WrongLive do
   end
 
   def mount(_params, _session, socket) do
+    user = socket.assigns.current_scope.user
+
     {:ok,
      assign(socket,
        score: 0,
        message: "Make a guess:",
        answer: :rand.uniform(9) + 1,
-       replay: false
+       replay: false,
+       current_user: user
      )}
   end
 

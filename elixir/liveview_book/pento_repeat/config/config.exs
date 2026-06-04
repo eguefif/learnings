@@ -7,6 +7,19 @@
 # General application configuration
 import Config
 
+config :pento_repeat, :scopes,
+  user: [
+    default: true,
+    module: PentoRepeat.Accounts.Scope,
+    assign_key: :current_scope,
+    access_path: [:user, :id],
+    schema_key: :user_id,
+    schema_type: :id,
+    schema_table: :users,
+    test_data_fixture: PentoRepeat.AccountsFixtures,
+    test_setup_helper: :register_and_log_in_user
+  ]
+
 config :pento_repeat,
   ecto_repos: [PentoRepeat.Repo],
   generators: [timestamp_type: :utc_datetime]

@@ -6,7 +6,7 @@ defmodule PentoRepeatWeb.WrongLive do
     <main class="mx-auto w-100">
       <div class="flex flex-col gap-8 mt-16">
         <h1 class="text-lg">
-          You score: {@score}
+          Hey {@current_user.email}. Your score: {@score}
         </h1>
         <p>{@message}({@answer})</p>
         <div class="flex flex-row gap-4">
@@ -29,9 +29,17 @@ defmodule PentoRepeatWeb.WrongLive do
   end
 
   def mount(_param, _session, socket) do
+    user = socket.assigns.current_scope.user
+
     {:ok,
      socket
-     |> assign(score: 0, message: "Make a guess", replay: false, answer: :rand.uniform(9) + 1)}
+     |> assign(
+       score: 0,
+       message: "Make a guess",
+       replay: false,
+       answer: :rand.uniform(9) + 1,
+       current_user: user
+     )}
   end
 
   # def handle_event("guess", %{"number" => guess}, socket) do

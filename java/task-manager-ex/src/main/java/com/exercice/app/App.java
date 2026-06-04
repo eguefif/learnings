@@ -52,14 +52,17 @@ class TaskManager {
     idx++;
   }
 
+  interface TaskFilter {
+    boolean accept(Task t);
+  }
+
   public void printSummary() {
+    final int i = 0;
     class ReportLine {
       Task task;
-      int lineNumber;
 
-      ReportLine(Task givenTask, int givenLineNumber) {
+      ReportLine(Task givenTask) {
         task = givenTask;
-        lineNumber = givenLineNumber;
       }
 
       public void print() {
@@ -67,16 +70,18 @@ class TaskManager {
         if (task.done == false) {
           done = ' ';
         }
-        System.out.printf("%d. [%c] %s\n", lineNumber, done, task.title);
+        System.out.printf("%d. [%c] %s\n", i, done, task.title);
       }
     }
 
     TasksStat stats = new TasksStat();
     stats.printSummary();
     System.out.println("Tasks Summary");
-    for (int i = 0; i < idx; i++) {
-      ReportLine report = new ReportLine(tasks[i], i + 1);
+    // for (int i = 0; i < idx; i++) {
+    while (i < idx) {
+      ReportLine report = new ReportLine(tasks[i]);
       report.print();
+      i++;
     }
   }
 }
