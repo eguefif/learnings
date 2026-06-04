@@ -76,7 +76,7 @@ defmodule Pento.Accounts do
   """
   def register_user(attrs) do
     %User{}
-    |> User.email_changeset(attrs)
+    |> User.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -109,6 +109,10 @@ defmodule Pento.Accounts do
   """
   def change_user_email(user, attrs \\ %{}, opts \\ []) do
     User.email_changeset(user, attrs, opts)
+  end
+
+  def change_user(user, attrs \\ %{}, opts \\ []) do
+    User.changeset(user, attrs, opts)
   end
 
   @doc """

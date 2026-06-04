@@ -5,7 +5,7 @@ defmodule PentoWeb.WrongLive do
     ~H"""
     <main class="px-4 py-20 sm:px-6 lg:px-8">
       <h1 class="mb-4 text-4xl font-extrabold">
-        Hey {@current_user.email}. Here is your score: {@score}
+        Hey {@current_user.username}. Here is your score: {@score}
       </h1>
       <h2>
         {@message}

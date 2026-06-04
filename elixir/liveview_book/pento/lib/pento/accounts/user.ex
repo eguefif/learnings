@@ -2,14 +2,28 @@ defmodule Pento.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @mx_username 50
+
   schema "users" do
     field :email, :string
+    field :username, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :utc_datetime
     field :authenticated_at, :utc_datetime, virtual: true
 
     timestamps(type: :utc_datetime)
+  end
+
+  def changeset(user, attrs, opts \\ []) do
+    permitted = [:email, :username]
+    required = permitted
+
+    user
+    |> cast(attrs, permitted)
+    |> validate_required(required)
+    |> validate_email(opts)
+    |> validate_length(:username, min: 3, max: @mx_username)
   end
 
   @doc """
