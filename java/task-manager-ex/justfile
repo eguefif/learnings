@@ -1,0 +1,3 @@
+run:
+  mvn compile
+  java -cp target/classes com.exercice.app.App
