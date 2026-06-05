@@ -6,7 +6,7 @@ defmodule PentoRepeatWeb.WrongLive do
     <main class="mx-auto w-100">
       <div class="flex flex-col gap-8 mt-16">
         <h1 class="text-lg">
-          Hey {@current_user.email}. Your score: {@score}
+          Hey {@current_user.username}. Your score: {@score}
         </h1>
         <p>{@message}({@answer})</p>
         <div class="flex flex-row gap-4">

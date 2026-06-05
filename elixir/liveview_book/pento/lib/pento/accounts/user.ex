@@ -36,6 +36,9 @@ defmodule Pento.Accounts.User do
     * `:validate_unique` - Set to false if you don't want to validate the
       uniqueness of the email, useful when displaying live validations.
       Defaults to `true`.
+    * `:no_change_validation` - Set to true if you don't want to validate
+      if the email has changed.
+      Defaults to `false`
   """
   def email_changeset(user, attrs, opts \\ []) do
     user
@@ -62,11 +65,15 @@ defmodule Pento.Accounts.User do
     end
   end
 
-  defp validate_email_changed(changeset) do
-    if get_field(changeset, :email) && get_change(changeset, :email) == nil do
-      add_error(changeset, :email, "did not change")
-    else
+  defp validate_email_changed(changeset, opts \\ []) do
+    if keyword.get(opts, :change_validation, false) do
       changeset
+    else
+      if get_field(changeset, :email) && get_change(changeset, :email) == nil do
+        add_error(changeset, :email, "did not change")
+      else
+        changeset
+      end
     end
   end
 

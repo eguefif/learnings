@@ -4,12 +4,21 @@ defmodule PentoRepeat.Accounts.User do
 
   schema "users" do
     field :email, :string
+    field :username, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :utc_datetime
     field :authenticated_at, :utc_datetime, virtual: true
 
     timestamps(type: :utc_datetime)
+  end
+
+  def changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:email, :username])
+    |> validate_required([:email, :username])
+    |> validate_length(:email, min: 3, max: 50)
+    |> validate_email(opts)
   end
 
   @doc """
@@ -22,6 +31,9 @@ defmodule PentoRepeat.Accounts.User do
     * `:validate_unique` - Set to false if you don't want to validate the
       uniqueness of the email, useful when displaying live validations.
       Defaults to `true`.
+    * `:validate_change` - Set to false if you don't want to validate
+      if the email has changed.
+      Defaults to `true`
   """
   def email_changeset(user, attrs, opts \\ []) do
     user
@@ -42,15 +54,19 @@ defmodule PentoRepeat.Accounts.User do
       changeset
       |> unsafe_validate_unique(:email, PentoRepeat.Repo)
       |> unique_constraint(:email)
-      |> validate_email_changed()
+      |> validate_email_changed(opts)
     else
       changeset
     end
   end
 
-  defp validate_email_changed(changeset) do
-    if get_field(changeset, :email) && get_change(changeset, :email) == nil do
-      add_error(changeset, :email, "did not change")
+  defp validate_email_changed(changeset, opts) do
+    if Keyword.get(opts, :validate_change, true) do
+      if get_field(changeset, :email) && get_change(changeset, :email) == nil do
+        add_error(changeset, :email, "did not change")
+      else
+        changeset
+      end
     else
       changeset
     end
