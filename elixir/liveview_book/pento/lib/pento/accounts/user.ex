@@ -6,6 +6,7 @@ defmodule Pento.Accounts.User do
 
   schema "users" do
     field :email, :string
+    field :role, :string
     field :username, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
@@ -16,7 +17,7 @@ defmodule Pento.Accounts.User do
   end
 
   def changeset(user, attrs, opts \\ []) do
-    permitted = [:email, :username]
+    permitted = [:email, :username, :role]
     required = permitted
 
     user
@@ -36,9 +37,9 @@ defmodule Pento.Accounts.User do
     * `:validate_unique` - Set to false if you don't want to validate the
       uniqueness of the email, useful when displaying live validations.
       Defaults to `true`.
-    * `:no_change_validation` - Set to true if you don't want to validate
+    * `:validate_change` - Set to false if you don't want to validate
       if the email has changed.
-      Defaults to `false`
+      Defaults to `true`
   """
   def email_changeset(user, attrs, opts \\ []) do
     user
@@ -66,7 +67,7 @@ defmodule Pento.Accounts.User do
   end
 
   defp validate_email_changed(changeset, opts \\ []) do
-    if keyword.get(opts, :change_validation, false) do
+    if Keyword.get(opts, :validate_change, true) do
       changeset
     else
       if get_field(changeset, :email) && get_change(changeset, :email) == nil do

@@ -75,7 +75,7 @@ defmodule Pento.Accounts do
 
   """
   def register_user(attrs) do
-    %User{}
+    %User{role: "regular"}
     |> User.changeset(attrs)
     |> Repo.insert()
   end
