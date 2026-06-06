@@ -60,21 +60,21 @@ defmodule Pento.Accounts.User do
       changeset
       |> unsafe_validate_unique(:email, Pento.Repo)
       |> unique_constraint(:email)
-      |> validate_email_changed()
+      |> validate_email_changed(opts)
     else
       changeset
     end
   end
 
-  defp validate_email_changed(changeset, opts \\ []) do
+  defp validate_email_changed(changeset, opts) do
     if Keyword.get(opts, :validate_change, true) do
-      changeset
-    else
       if get_field(changeset, :email) && get_change(changeset, :email) == nil do
         add_error(changeset, :email, "did not change")
       else
         changeset
       end
+    else
+      changeset
     end
   end
 
