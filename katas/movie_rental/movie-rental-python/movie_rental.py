@@ -9,41 +9,48 @@ class Customer:
     def statement(self):
         totalAmount = 0
         frequentRenterPoints = 0
+
+        # Title
         result = "Rental Record for " + self.getName() + "\n"
 
-        for each in self._rentals:
+        # Table
+        for rental in self._rentals:
             thisAmount = 0.0
 
             # determine amounts for each line
-            if each.getMovie().getPriceCode() == Movie.REGULAR:
+            if rental.getMovie().getPriceCode() == Movie.REGULAR:
                 thisAmount += 2
-                if each.getDaysRented() > 2:
-                    thisAmount += (each.getDaysRented() - 2) * 1.5
-            elif each.getMovie().getPriceCode() == Movie.NEW_RELEASE:
-                thisAmount += each.getDaysRented() * 3
-            elif each.getMovie().getPriceCode() == Movie.CHILDRENS:
+                if rental.getDaysRented() > 2:
+                    thisAmount += (rental.getDaysRented() - 2) * 1.5
+            elif rental.getMovie().getPriceCode() == Movie.NEW_RELEASE:
+                thisAmount += rental.getDaysRented() * 3
+            elif rental.getMovie().getPriceCode() == Movie.CHILDRENS:
                 thisAmount += 1.5
-                if each.getDaysRented() > 3:
-                    thisAmount += (each.getDaysRented() - 3) * 1.5
+                if rental.getDaysRented() > 3:
+                    thisAmount += (rental.getDaysRented() - 3) * 1.5
 
             # add frequent renter points
             frequentRenterPoints += 1
             # add bonus for a two day new release rental
-            if (each.getMovie().getPriceCode() == Movie.NEW_RELEASE) and each.getDaysRented() > 1:
+            if (
+                rental.getMovie().getPriceCode() == Movie.NEW_RELEASE
+            ) and rental.getDaysRented() > 1:
                 frequentRenterPoints += 1
 
             # show figures for this rental
-            result += "\t" + each.getMovie().getTitle() + "\t" + str(thisAmount) + "\n"
+            result += (
+                "\t" + rental.getMovie().getTitle() + "\t" + str(thisAmount) + "\n"
+            )
             totalAmount += thisAmount
 
-        # add footer lines
+        # add footer lines: substatements
         result += "Amount owed is " + str(totalAmount) + "\n"
         result += "You earned " + str(frequentRenterPoints) + " frequent renter points"
 
         return result
 
-    def addRental(self, param):
-        self._rentals.append(param)
+    def addRental(self, rental):
+        self._rentals.append(rental)
 
 
 class Movie:
