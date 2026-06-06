@@ -1,13 +1,13 @@
 class Customer:
     def __init__(self, name):
         self._rentals = []
+        self._totalAmount = 0
         self.name = name
 
     def getName(self):
         return self.name
 
     def statement(self):
-        totalAmount = 0
         frequentRenterPoints = 0
 
         # Title
@@ -15,20 +15,6 @@ class Customer:
 
         # Table
         for rental in self._rentals:
-            thisAmount = 0.0
-
-            # determine amounts for each line
-            if rental.getMovie().getPriceCode() == Movie.REGULAR:
-                thisAmount += 2
-                if rental.getDaysRented() > 2:
-                    thisAmount += (rental.getDaysRented() - 2) * 1.5
-            elif rental.getMovie().getPriceCode() == Movie.NEW_RELEASE:
-                thisAmount += rental.getDaysRented() * 3
-            elif rental.getMovie().getPriceCode() == Movie.CHILDRENS:
-                thisAmount += 1.5
-                if rental.getDaysRented() > 3:
-                    thisAmount += (rental.getDaysRented() - 3) * 1.5
-
             # add frequent renter points
             frequentRenterPoints += 1
             # add bonus for a two day new release rental
@@ -39,18 +25,17 @@ class Customer:
 
             # show figures for this rental
             result += (
-                "\t" + rental.getMovie().getTitle() + "\t" + str(thisAmount) + "\n"
+                "\t" + rental.getMovie().getTitle() + "\t" + str(rental.amount) + "\n"
             )
-            totalAmount += thisAmount
-
         # add footer lines: substatements
-        result += "Amount owed is " + str(totalAmount) + "\n"
+        result += "Amount owed is " + str(self._totalAmount) + "\n"
         result += "You earned " + str(frequentRenterPoints) + " frequent renter points"
 
         return result
 
     def addRental(self, rental):
         self._rentals.append(rental)
+        self._totalAmount += rental.getAmount()
 
 
 class Movie:
@@ -76,6 +61,27 @@ class Rental:
     def __init__(self, movie, daysRented):
         self.daysRented = daysRented
         self.movie = movie
+        self.amount = self._calculateAmount()
+
+    def _calculateAmount(self):
+        thisAmount = 0.0
+
+        # determine amounts for each line
+        if self.getMovie().getPriceCode() == Movie.REGULAR:
+            thisAmount += 2
+            if self.getDaysRented() > 2:
+                thisAmount += (self.getDaysRented() - 2) * 1.5
+        elif self.getMovie().getPriceCode() == Movie.NEW_RELEASE:
+            thisAmount += self.getDaysRented() * 3
+        elif self.getMovie().getPriceCode() == Movie.CHILDRENS:
+            thisAmount += 1.5
+            if self.getDaysRented() > 3:
+                thisAmount += (self.getDaysRented() - 3) * 1.5
+
+        return thisAmount
+
+    def getAmount(self):
+        return self.amount
 
     def getDaysRented(self):
         return self.daysRented
