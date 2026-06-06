@@ -15,12 +15,14 @@ class Customer:
 
     def _prepareContent(self):
         content = {}
+
+        # Add title
         title = {}
         title["text"] = "Rental Record for"
         title["name"] = self.getName()
         content["title"] = title
 
-        # Create Table for each movies
+        # Add Table for each movies
         content["table"] = []
         for rental in self._rentals:
             row = {}
@@ -28,7 +30,7 @@ class Customer:
             row["amount"] = rental.getAmount()
             content["table"].append(row)
 
-        # Prepare footer lines
+        # Add footer
         totalAmount = {}
         totalAmount["text"] = "Amount owed is"
         totalAmount["amount"] = str(self._totalAmount)
@@ -46,6 +48,8 @@ class Customer:
                 return self._createRawText(content)
             case "html":
                 return self._createHtml(content)
+            case _:
+                raise Exception(f"UnknownMethod: {method}")
 
     def _createRawText(self, content):
         result = content["title"]["text"] + " " + content["title"]["name"] + "\n"
