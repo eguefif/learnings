@@ -1,14 +1,96 @@
-class Customer:
-    def __init__(self, name):
-        self._rentals = []
-        self._totalAmount = 0
-        self.name = name
-        self._frequentRenterPoints = 0
+from typing import Literal, TypedDict
 
-    def getName(self):
+
+class RowContent(TypedDict):
+    movieTitle: str
+    amount: str
+
+
+class TitleContent(TypedDict):
+    text: str
+    name: str
+
+
+class AmountContent(TypedDict):
+    text: str
+    amount: str
+
+
+class PointsContent(TypedDict):
+    text: str
+    points: str
+
+
+class StatementContent(TypedDict):
+    title: TitleContent
+    table: list[RowContent]
+    totalAmount: AmountContent
+    renterPoints: PointsContent
+
+
+class Movie:
+    CHILDRENS: int = 2
+    NEW_RELEASE: int = 1
+    REGULAR: int = 0
+
+    def __init__(self, title: str, priceCode: float):
+        self.title: str = title
+        self.priceCode: float = priceCode
+
+    def getPriceCode(self) -> float:
+        return self.priceCode
+
+    def setPriceCode(self, price: float):
+        self.priceCode = price
+
+    def getTitle(self) -> str:
+        return self.title
+
+
+class Rental:
+    def __init__(self, movie: Movie, daysRented: int):
+        self.daysRented: int = daysRented
+        self.movie: Movie = movie
+        self.amount: float = self._calculateAmount()
+
+    def _calculateAmount(self) -> float:
+        thisAmount = 0.0
+
+        # determine amounts for each line
+        if self.getMovie().getPriceCode() == Movie.REGULAR:
+            thisAmount += 2
+            if self.getDaysRented() > 2:
+                thisAmount += (self.getDaysRented() - 2) * 1.5
+        elif self.getMovie().getPriceCode() == Movie.NEW_RELEASE:
+            thisAmount += self.getDaysRented() * 3
+        elif self.getMovie().getPriceCode() == Movie.CHILDRENS:
+            thisAmount += 1.5
+            if self.getDaysRented() > 3:
+                thisAmount += (self.getDaysRented() - 3) * 1.5
+
+        return thisAmount
+
+    def getAmount(self) -> float:
+        return self.amount
+
+    def getDaysRented(self) -> int:
+        return self.daysRented
+
+    def getMovie(self) -> Movie:
+        return self.movie
+
+
+class Customer:
+    def __init__(self, name: str):
+        self._rentals: list[Rental] = []
+        self._totalAmount: float = 0
+        self._frequentRenterPoints: int = 0
+        self.name: str = name
+
+    def getName(self) -> str:
         return self.name
 
-    def statement(self, method="rawText"):
+    def statement(self, method: Literal["rawText", "html"] = "rawText") -> str:
         """Generate a rental statement as a formatted string.
 
         Args:
@@ -22,40 +104,43 @@ class Customer:
         Raises:
             Exception: If method is not a recognized format.
         """
-        content = self._prepareContent()
+        content: StatementContent = self._prepareContent()
         result = self._createStatement(content, method)
         return result
 
-    def _prepareContent(self):
-        content = {}
-
-        # Add title
-        title = {}
-        title["text"] = "Rental Record for"
-        title["name"] = self.getName()
-        content["title"] = title
+    def _prepareContent(self) -> StatementContent:
+        title: TitleContent = {"text": "Rental Record for", "name": self.getName()}
 
         # Add Table for each movies
-        content["table"] = []
-        for rental in self._rentals:
-            row = {}
-            row["movieTitle"] = rental.getMovie().getTitle()
-            row["amount"] = rental.getAmount()
-            content["table"].append(row)
+        rowContent: list[RowContent] = [
+            {
+                "movieTitle": rental.getMovie().getTitle(),
+                "amount": str(rental.getAmount()),
+            }
+            for rental in self._rentals
+        ]
 
         # Add footer
-        totalAmount = {}
-        totalAmount["text"] = "Amount owed is"
-        totalAmount["amount"] = str(self._totalAmount)
-        content["totalAmount"] = totalAmount
+        totalAmount: AmountContent = {
+            "text": "Amount owed is",
+            "amount": str(self._totalAmount),
+        }
 
-        renterPoints = {}
-        renterPoints["text"] = "You earned #{point} frequent renter points"
-        renterPoints["points"] = str(self._frequentRenterPoints)
-        content["renterPoints"] = renterPoints
+        renterPoints: PointsContent = {
+            "text": "You earned #{point} frequent renter points",
+            "points": str(self._frequentRenterPoints),
+        }
+        content: StatementContent = {
+            "title": title,
+            "table": rowContent,
+            "totalAmount": totalAmount,
+            "renterPoints": renterPoints,
+        }
         return content
 
-    def _createStatement(self, content, method):
+    def _createStatement(
+        self, content: StatementContent, method: Literal["rawText", "html"]
+    ) -> str:
         match method:
             case "rawText":
                 return self._createRawText(content)
@@ -64,10 +149,10 @@ class Customer:
             case _:
                 raise Exception(f"UnknownMethod: {method}")
 
-    def _createRawText(self, content):
+    def _createRawText(self, content: StatementContent) -> str:
         result = content["title"]["text"] + " " + content["title"]["name"] + "\n"
         for row in content["table"]:
-            result += "\t" + row["movieTitle"] + "\t" + str(row["amount"]) + "\n"
+            result += "\t" + row["movieTitle"] + "\t" + row["amount"] + "\n"
         result += (
             content["totalAmount"]["text"]
             + " "
@@ -79,7 +164,7 @@ class Customer:
         )
         return result
 
-    def _createHtml(self, content):
+    def _createHtml(self, content: StatementContent) -> str:
         # TODO: add em for renter's name
         result = (
             "<h1>"
@@ -115,7 +200,7 @@ class Customer:
         )
         return result
 
-    def addRental(self, rental):
+    def addRental(self, rental: Rental):
         self._rentals.append(rental)
         self._totalAmount += rental.getAmount()
         # add frequent renter points
@@ -130,55 +215,3 @@ class Customer:
             points += 1
 
         return points
-
-
-class Movie:
-    CHILDRENS = 2
-    NEW_RELEASE = 1
-    REGULAR = 0
-
-    def __init__(self, title, priceCode):
-        self.title = title
-        self.priceCode = priceCode
-
-    def getPriceCode(self):
-        return self.priceCode
-
-    def setPriceCode(self, arg):
-        self.priceCode = arg
-
-    def getTitle(self):
-        return self.title
-
-
-class Rental:
-    def __init__(self, movie, daysRented):
-        self.daysRented = daysRented
-        self.movie = movie
-        self.amount = self._calculateAmount()
-
-    def _calculateAmount(self):
-        thisAmount = 0.0
-
-        # determine amounts for each line
-        if self.getMovie().getPriceCode() == Movie.REGULAR:
-            thisAmount += 2
-            if self.getDaysRented() > 2:
-                thisAmount += (self.getDaysRented() - 2) * 1.5
-        elif self.getMovie().getPriceCode() == Movie.NEW_RELEASE:
-            thisAmount += self.getDaysRented() * 3
-        elif self.getMovie().getPriceCode() == Movie.CHILDRENS:
-            thisAmount += 1.5
-            if self.getDaysRented() > 3:
-                thisAmount += (self.getDaysRented() - 3) * 1.5
-
-        return thisAmount
-
-    def getAmount(self):
-        return self.amount
-
-    def getDaysRented(self):
-        return self.daysRented
-
-    def getMovie(self):
-        return self.movie
