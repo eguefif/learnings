@@ -3,39 +3,44 @@ class Customer:
         self._rentals = []
         self._totalAmount = 0
         self.name = name
+        self._frequentRenterPoints = 0
 
     def getName(self):
         return self.name
 
     def statement(self):
-        frequentRenterPoints = 0
-
         # Title
         result = "Rental Record for " + self.getName() + "\n"
 
         # Table
         for rental in self._rentals:
-            # add frequent renter points
-            frequentRenterPoints += 1
-            # add bonus for a two day new release rental
-            if (
-                rental.getMovie().getPriceCode() == Movie.NEW_RELEASE
-            ) and rental.getDaysRented() > 1:
-                frequentRenterPoints += 1
-
             # show figures for this rental
             result += (
                 "\t" + rental.getMovie().getTitle() + "\t" + str(rental.amount) + "\n"
             )
         # add footer lines: substatements
         result += "Amount owed is " + str(self._totalAmount) + "\n"
-        result += "You earned " + str(frequentRenterPoints) + " frequent renter points"
+        result += (
+            "You earned " + str(self._frequentRenterPoints) + " frequent renter points"
+        )
 
         return result
 
     def addRental(self, rental):
         self._rentals.append(rental)
         self._totalAmount += rental.getAmount()
+        # add frequent renter points
+        self._frequentRenterPoints += self._calculateRenterPoints(rental)
+
+    def _calculateRenterPoints(self, rental):
+        points = 1
+        # add bonus for a two day new release rental
+        if (
+            rental.getMovie().getPriceCode() == Movie.NEW_RELEASE
+        ) and rental.getDaysRented() > 1:
+            points += 1
+
+        return points
 
 
 class Movie:
