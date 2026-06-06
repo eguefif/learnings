@@ -9,24 +9,36 @@ class Customer:
         return self.name
 
     def statement(self, method="rawText"):
-        content = {}
-        # Title
-        content["title"] = "Rental Record for " + self.getName()
+        content = self._prepareContent()
+        result = self._createStatement(content, method)
+        return result
 
-        # Table
+    def _prepareContent(self):
+        content = {}
+        title = {}
+        title["text"] = "Rental Record for"
+        title["name"] = self.getName()
+        content["title"] = title
+
+        # Create Table for each movies
         content["table"] = []
         for rental in self._rentals:
             row = {}
             row["movieTitle"] = rental.getMovie().getTitle()
             row["amount"] = rental.getAmount()
             content["table"].append(row)
-        # add footer lines: substatements
-        content["totalAmount"] = "Amount owed is " + str(self._totalAmount)
-        content["renterPoints"] = (
-            "You earned " + str(self._frequentRenterPoints) + " frequent renter points"
-        )
-        result = self._createStatement(content, method)
-        return result
+
+        # Prepare footer lines
+        totalAmount = {}
+        totalAmount["text"] = "Amount owed is"
+        totalAmount["amount"] = str(self._totalAmount)
+        content["totalAmount"] = totalAmount
+
+        renterPoints = {}
+        renterPoints["text"] = "You earned #{point} frequent renter points"
+        renterPoints["points"] = str(self._frequentRenterPoints)
+        content["renterPoints"] = renterPoints
+        return content
 
     def _createStatement(self, content, method):
         match method:
@@ -36,15 +48,55 @@ class Customer:
                 return self._createHtml(content)
 
     def _createRawText(self, content):
-        result = content["title"] + "\n"
+        result = content["title"]["text"] + " " + content["title"]["name"] + "\n"
         for row in content["table"]:
             result += "\t" + row["movieTitle"] + "\t" + str(row["amount"]) + "\n"
-        result += content["totalAmount"] + "\n"
-        result += content["renterPoints"]
+        result += (
+            content["totalAmount"]["text"]
+            + " "
+            + content["totalAmount"]["amount"]
+            + "\n"
+        )
+        result += content["renterPoints"]["text"].replace(
+            "#{point}", content["renterPoints"]["points"]
+        )
         return result
 
-    def _createHtml(self, _content):
-        return ""
+    def _createHtml(self, content):
+        # TODO: add em for renter's name
+        result = (
+            "<h1>"
+            + content["title"]["text"]
+            + " "
+            + f"<em>{content['title']['name']}</em>"
+            + "</h1>\n"
+        )
+        result += "<table>\n"
+        for row in content["table"]:
+            result += (
+                "\t<tr><td>"
+                + row["movieTitle"]
+                + "</td><td>"
+                + str(row["amount"])
+                + "</td></tr>\n"
+            )
+        result += "</table>\n"
+        result += (
+            "<p>"
+            + content["totalAmount"]["text"]
+            + " "
+            + f"<em>{content['totalAmount']['amount']}</em>"
+            + "</p>\n"
+        )
+
+        result += (
+            "<p>"
+            + content["renterPoints"]["text"].replace(
+                "#{point}", f"<em>{content['renterPoints']['points']}</em>"
+            )
+            + "</p>"
+        )
+        return result
 
     def addRental(self, rental):
         self._rentals.append(rental)
