@@ -8,23 +8,43 @@ class Customer:
     def getName(self):
         return self.name
 
-    def statement(self):
+    def statement(self, method="rawText"):
+        content = {}
         # Title
-        result = "Rental Record for " + self.getName() + "\n"
+        content["title"] = "Rental Record for " + self.getName()
 
         # Table
+        content["table"] = []
         for rental in self._rentals:
-            # show figures for this rental
-            result += (
-                "\t" + rental.getMovie().getTitle() + "\t" + str(rental.amount) + "\n"
-            )
+            row = {}
+            row["movieTitle"] = rental.getMovie().getTitle()
+            row["amount"] = rental.getAmount()
+            content["table"].append(row)
         # add footer lines: substatements
-        result += "Amount owed is " + str(self._totalAmount) + "\n"
-        result += (
+        content["totalAmount"] = "Amount owed is " + str(self._totalAmount)
+        content["renterPoints"] = (
             "You earned " + str(self._frequentRenterPoints) + " frequent renter points"
         )
-
+        result = self._createStatement(content, method)
         return result
+
+    def _createStatement(self, content, method):
+        match method:
+            case "rawText":
+                return self._createRawText(content)
+            case "html":
+                return self._createHtml(content)
+
+    def _createRawText(self, content):
+        result = content["title"] + "\n"
+        for row in content["table"]:
+            result += "\t" + row["movieTitle"] + "\t" + str(row["amount"]) + "\n"
+        result += content["totalAmount"] + "\n"
+        result += content["renterPoints"]
+        return result
+
+    def _createHtml(self, _content):
+        return ""
 
     def addRental(self, rental):
         self._rentals.append(rental)
