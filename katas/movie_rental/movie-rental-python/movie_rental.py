@@ -90,25 +90,12 @@ class Customer:
     def getName(self) -> str:
         return self.name
 
-    def statement(self, method: Literal["rawText", "html"] = "rawText") -> str:
-        """Generate a rental statement as a formatted string.
-
-        Args:
-            method (str): Output format. One of:
-                - "rawText" (default): plain text format.
-                - "html": HTML format with tags.
+    def statement(self) -> StatementContent:
+        """Prepare the rental statement content for rendering.
 
         Returns:
-            str: The formatted rental statement.
-
-        Raises:
-            Exception: If method is not a recognized format.
+            StatementContent: Structured data ready to be passed to a presentation function.
         """
-        content: StatementContent = self._prepareContent()
-        result = self._createStatement(content, method)
-        return result
-
-    def _prepareContent(self) -> StatementContent:
         title: TitleContent = {"text": "Rental Record for", "name": self.getName()}
 
         # Add Table for each movies
@@ -138,68 +125,6 @@ class Customer:
         }
         return content
 
-    def _createStatement(
-        self, content: StatementContent, method: Literal["rawText", "html"]
-    ) -> str:
-        match method:
-            case "rawText":
-                return self._createRawText(content)
-            case "html":
-                return self._createHtml(content)
-            case _:
-                raise Exception(f"UnknownMethod: {method}")
-
-    def _createRawText(self, content: StatementContent) -> str:
-        result = content["title"]["text"] + " " + content["title"]["name"] + "\n"
-        for row in content["table"]:
-            result += "\t" + row["movieTitle"] + "\t" + row["amount"] + "\n"
-        result += (
-            content["totalAmount"]["text"]
-            + " "
-            + content["totalAmount"]["amount"]
-            + "\n"
-        )
-        result += content["renterPoints"]["text"].replace(
-            "#{point}", content["renterPoints"]["points"]
-        )
-        return result
-
-    def _createHtml(self, content: StatementContent) -> str:
-        # TODO: add em for renter's name
-        result = (
-            "<h1>"
-            + content["title"]["text"]
-            + " "
-            + f"<em>{content['title']['name']}</em>"
-            + "</h1>\n"
-        )
-        result += "<table>\n"
-        for row in content["table"]:
-            result += (
-                "\t<tr><td>"
-                + row["movieTitle"]
-                + "</td><td>"
-                + str(row["amount"])
-                + "</td></tr>\n"
-            )
-        result += "</table>\n"
-        result += (
-            "<p>"
-            + content["totalAmount"]["text"]
-            + " "
-            + f"<em>{content['totalAmount']['amount']}</em>"
-            + "</p>\n"
-        )
-
-        result += (
-            "<p>"
-            + content["renterPoints"]["text"].replace(
-                "#{point}", f"<em>{content['renterPoints']['points']}</em>"
-            )
-            + "</p>"
-        )
-        return result
-
     def addRental(self, rental: Rental):
         self._rentals.append(rental)
         self._totalAmount += rental.getAmount()
@@ -215,3 +140,79 @@ class Customer:
             points += 1
 
         return points
+
+
+def statement(
+    customer: Customer, method: Literal["rawText", "html"] = "rawText"
+) -> str:
+    """Generate a formatted rental statement for a customer.
+
+    Args:
+        customer (Customer): The customer whose rentals are summarized.
+        method (str): Output format. One of:
+            - "rawText" (default): plain text format.
+            - "html": HTML format with tags.
+
+    Returns:
+        str: The formatted rental statement.
+
+    Raises:
+        Exception: If method is not a recognized format.
+    """
+    content = customer.statement()
+    match method:
+        case "rawText":
+            return _createRawText(content)
+        case "html":
+            return _createHtml(content)
+        case _:
+            raise Exception(f"UnknownMethod: {method}")
+
+
+def _createRawText(content: StatementContent) -> str:
+    result = content["title"]["text"] + " " + content["title"]["name"] + "\n"
+    for row in content["table"]:
+        result += "\t" + row["movieTitle"] + "\t" + row["amount"] + "\n"
+    result += (
+        content["totalAmount"]["text"] + " " + content["totalAmount"]["amount"] + "\n"
+    )
+    result += content["renterPoints"]["text"].replace(
+        "#{point}", content["renterPoints"]["points"]
+    )
+    return result
+
+
+def _createHtml(content: StatementContent) -> str:
+    result = (
+        "<h1>"
+        + content["title"]["text"]
+        + " "
+        + f"<em>{content['title']['name']}</em>"
+        + "</h1>\n"
+    )
+    result += "<table>\n"
+    for row in content["table"]:
+        result += (
+            "\t<tr><td>"
+            + row["movieTitle"]
+            + "</td><td>"
+            + str(row["amount"])
+            + "</td></tr>\n"
+        )
+    result += "</table>\n"
+    result += (
+        "<p>"
+        + content["totalAmount"]["text"]
+        + " "
+        + f"<em>{content['totalAmount']['amount']}</em>"
+        + "</p>\n"
+    )
+
+    result += (
+        "<p>"
+        + content["renterPoints"]["text"].replace(
+            "#{point}", f"<em>{content['renterPoints']['points']}</em>"
+        )
+        + "</p>"
+    )
+    return result

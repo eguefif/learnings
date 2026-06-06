@@ -1,4 +1,4 @@
-from movie_rental import Customer, Movie, Rental
+from movie_rental import Customer, Movie, Rental, statement
 
 
 def tests():
@@ -20,7 +20,7 @@ def tests():
     expected += "Amount owed is 19.0\n"
     expected += "You earned 7 frequent renter points"
 
-    assert expected == customer.statement()
+    assert expected == statement(customer, "rawText")
 
 
 def tests_html():
@@ -44,4 +44,4 @@ def tests_html():
     expected += "<p>Amount owed is <em>19.0</em></p>\n"
     expected += "<p>You earned <em>7</em> frequent renter points</p>"
 
-    assert expected == customer.statement(method="html")
+    assert expected == statement(customer, method="html")
