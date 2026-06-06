@@ -9,6 +9,19 @@ class Customer:
         return self.name
 
     def statement(self, method="rawText"):
+        """Generate a rental statement as a formatted string.
+
+        Args:
+            method (str): Output format. One of:
+                - "rawText" (default): plain text format.
+                - "html": HTML format with tags.
+
+        Returns:
+            str: The formatted rental statement.
+
+        Raises:
+            Exception: If method is not a recognized format.
+        """
         content = self._prepareContent()
         result = self._createStatement(content, method)
         return result
