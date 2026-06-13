@@ -7,25 +7,28 @@ class Greed
     return false
   end
 
-  def self.is_straight(dices)
+  def self.take_six_of_a_kind(score, dices)
+    return score, dices if dices.length == 0
+
+    tallies = dices.tally
+    sixes = tallies.select { |k, v| v == 6 }
+    dice = sixes.keys.first
+
+    return score, dices if dice.nil?
+    return dice * 100 * 8, [] 
+  end
+
+  def self.take_straight(score, dices)
     [1, 2, 3, 4, 5, 6].each do |n|
-      return false unless dices.any?(n)
+      return score, dices unless dices.any?(n)
     end
-    return true
+    return score + 1200, []
   end
 
   def self.score(dices)
-    tallies = dices.tally
     score = 0
-    if is_straight(dices)
-      return 1200
-    end
-    if tallies[1] == 1
-      score += 100
-    end
-    if tallies[5] == 1
-      score += 50
-    end
+    score, dices = take_straight(score, dices) 
+    score, dices = take_six_of_a_kind(score, dices) 
 
     return score
   end
