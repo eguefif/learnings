@@ -51,11 +51,25 @@ class Greed
     return score, dices
   end
 
+  def self.take_singles(score, dices)
+    tallies = dices.tally
+    if tallies.fetch(1, 0) == 1
+      score += 100
+      dices = dices.select { |d| d == 1 }
+    end
+    if tallies.fetch(5, 0) == 1
+      score += 50
+      dices = dices.select { |d| d == 5 }
+    end
+    return score, dices
+  end
+
   def self.score(dices)
     score = 0
     tallies = dices.tally
     score, dices = take_straight(score, dices) 
     score, dices = take_x_of_a_kind(score, dices) 
+    score, dices = take_singles(score, dices) 
 
     return score
   end
