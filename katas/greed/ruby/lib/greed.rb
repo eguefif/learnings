@@ -64,10 +64,19 @@ class Greed
     return score, dices
   end
 
+  def self.take_three_pairs(score, dices)
+    tallies = dices.tally.values.tally
+    if tallies.fetch(2, 0) == 3
+      return score + 800, []
+    end
+    return score, dices
+  end
+
   def self.score(dices)
     score = 0
     tallies = dices.tally
     score, dices = take_straight(score, dices) 
+    score, dices = take_three_pairs(score, dices) 
     score, dices = take_x_of_a_kind(score, dices) 
     score, dices = take_singles(score, dices) 
 

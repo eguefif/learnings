@@ -37,4 +37,8 @@ class GreedTest < Minitest::Test
   def test_triple_1_no_single_one_no_fifty_4_dices
     assert_equal 1000, Greed.score([1, 2, 1, 1])
   end
+
+  def test_three_pairs
+    assert_equal 800, Greed.score([1, 2, 1, 2, 3, 3])
+  end
 end
