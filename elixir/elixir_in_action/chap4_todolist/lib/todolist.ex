@@ -20,4 +20,10 @@ defmodule TodoList do
     entries = Map.put(entries, id, entry)
     %TodoList{next_id: id + 1, entries: entries}
   end
+
+  def delete_entry_by_title(%TodoList{next_id: id, entries: entries}, title)
+      when is_bitstring(title) do
+    entries = Map.reject(entries, fn {_k, v} -> v.title == title end)
+    %TodoList{next_id: id, entries: entries}
+  end
 end

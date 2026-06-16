@@ -25,7 +25,6 @@ defmodule TodolistTest do
         end) != false
       end)
 
-    IO.inspect(check)
     assert Enum.all?(check) == true
   end
 
@@ -36,5 +35,17 @@ defmodule TodolistTest do
     assert todo_list.next_id == 2
     assert map_size(todo_list.entries) == 1
     assert Map.fetch!(todo_list.entries, 1) == %{id: 1, date: ~D[2026-06-20], title: "Dentist"}
+  end
+
+  test "Delete entry by title" do
+    entries = [
+      %{date: ~D[2026-06-13], title: "Dentist"},
+      %{date: ~D[2026-05-13], title: "Movies"}
+    ]
+
+    todo_list = TodoList.new(entries)
+    todo_list = TodoList.delete_entry_by_title(todo_list, "Dentist")
+    assert map_size(todo_list.entries) == 1
+    assert Enum.find(todo_list.entries, fn {_k, v} -> v.title == "Dentist" end) == nil
   end
 end
