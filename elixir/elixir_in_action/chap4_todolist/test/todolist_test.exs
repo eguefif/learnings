@@ -107,7 +107,25 @@ defmodule TodolistTest do
       |> Map.values()
       |> Enum.all?(&(&1 == 2))
 
-    IO.inspect(check)
+    assert check
+  end
+
+  test "create from csv file" do
+    todo_list = TodoList.new_from_csv("data.csv")
+
+    check =
+      [
+        %{date: ~D[2023-12-19], title: "Dentist"},
+        %{date: ~D[2023-12-20], title: "Shopping"},
+        %{date: ~D[2023-12-19], title: "Movies"}
+      ]
+      |> Enum.all?(fn v ->
+        entry =
+          Map.values(todo_list.entries)
+          |> Enum.find(fn entry -> entry.title == v.title end)
+
+        Date.compare(entry.date, v.date)
+      end)
 
     assert check
   end

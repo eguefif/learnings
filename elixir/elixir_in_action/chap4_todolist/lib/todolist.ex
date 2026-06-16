@@ -4,8 +4,8 @@ defmodule TodoList do
   # TODO:
   #   - [x] Update entry
   #   - [x] Delete entry
-  #   - [ ] Get all entries
-  #   - [ ] Get one entry from id
+  #   - [x] Get all entries
+  #   - [x] Get one entry from id
   #   - [ ] Create todo list from csv file
   def new(entries \\ []) do
     entries
@@ -13,6 +13,11 @@ defmodule TodoList do
       %TodoList{},
       &add_entry(&2, &1)
     )
+  end
+
+  def new_from_csv(filename) when is_bitstring(filename) do
+    entries = TodoList.CSVImporter.import_csv(filename)
+    TodoList.new(entries)
   end
 
   def add_entry(%TodoList{next_id: id, entries: entries}, entry) when is_map(entry) do
