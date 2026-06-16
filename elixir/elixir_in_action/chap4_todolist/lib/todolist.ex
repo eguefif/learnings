@@ -2,7 +2,7 @@ defmodule TodoList do
   defstruct next_id: 1, entries: %{}
 
   # TODO:
-  #   - [ ] Update entry
+  #   - [x] Update entry
   #   - [ ] Delete entry
   #   - [ ] Get all entries
   #   - [ ] Get one entry from id
@@ -21,9 +21,23 @@ defmodule TodoList do
     %TodoList{next_id: id + 1, entries: entries}
   end
 
-  def delete_entry_by_title(%TodoList{next_id: id, entries: entries}, title)
+  def delete_entry_by_title(%TodoList{next_id: id, entries: entries} = _, title)
       when is_bitstring(title) do
     entries = Map.reject(entries, fn {_k, v} -> v.title == title end)
     %TodoList{next_id: id, entries: entries}
+  end
+
+  def update_by_id(%TodoList{next_id: next_id, entries: entries} = todo_list, id, new_todo)
+      when is_integer(id) do
+    case Map.get(entries, id) do
+      nil ->
+        TodoList.add_entry(todo_list, new_todo)
+
+      _ ->
+        %{
+          next_id: next_id,
+          entries: Map.update(entries, id, nil, fn v -> Map.merge(v, new_todo) end)
+        }
+    end
   end
 end
