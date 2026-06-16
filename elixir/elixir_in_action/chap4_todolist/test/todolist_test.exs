@@ -28,13 +28,15 @@ defmodule TodolistTest do
     assert Enum.all?(check) == true
   end
 
-  def create_todo_list_with_two_entries() do
-    entries = [
+  def get_entries() do
+    [
       %{date: ~D[2026-06-13], title: "Dentist"},
       %{date: ~D[2026-05-13], title: "Movies"}
     ]
+  end
 
-    TodoList.new(entries)
+  def create_todo_list_with_two_entries() do
+    TodoList.new(get_entries())
   end
 
   test "add entries" do
@@ -91,5 +93,22 @@ defmodule TodolistTest do
     assert entry.date == ~D[2026-06-13]
     assert entry.title == "Dentist"
     assert entry.id == 1
+  end
+
+  test "get all entries" do
+    todo_list = create_todo_list_with_two_entries()
+    initial_entries = get_entries()
+
+    check =
+      TodoList.get_all_entries(todo_list)
+      |> Enum.map(fn m -> Map.delete(m, :id) end)
+      |> Enum.concat(initial_entries)
+      |> Enum.frequencies()
+      |> Map.values()
+      |> Enum.all?(&(&1 == 2))
+
+    IO.inspect(check)
+
+    assert check
   end
 end

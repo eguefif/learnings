@@ -44,4 +44,8 @@ defmodule TodoList do
   def get_by_id(%TodoList{next_id: _, entries: entries} = _, id) when is_integer(id) do
     Map.get(entries, id)
   end
+
+  def get_all_entries(%TodoList{} = todo_list) do
+    Map.values(todo_list.entries)
+  end
 end
