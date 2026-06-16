@@ -3,7 +3,7 @@ defmodule TodoList do
 
   # TODO:
   #   - [x] Update entry
-  #   - [ ] Delete entry
+  #   - [x] Delete entry
   #   - [ ] Get all entries
   #   - [ ] Get one entry from id
   #   - [ ] Create todo list from csv file
@@ -39,5 +39,9 @@ defmodule TodoList do
           entries: Map.update(entries, id, nil, fn v -> Map.merge(v, new_todo) end)
         }
     end
+  end
+
+  def get_by_id(%TodoList{next_id: _, entries: entries} = _, id) when is_integer(id) do
+    Map.get(entries, id)
   end
 end

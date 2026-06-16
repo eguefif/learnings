@@ -82,4 +82,14 @@ defmodule TodolistTest do
     assert todo_list.entries[1].date.month == 06
     assert todo_list.entries[1].date.day == 13
   end
+
+  test "get entry by id" do
+    todo_list = create_todo_list_with_two_entries()
+
+    entry = TodoList.get_by_id(todo_list, 1)
+
+    assert entry.date == ~D[2026-06-13]
+    assert entry.title == "Dentist"
+    assert entry.id == 1
+  end
 end
