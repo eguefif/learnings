@@ -15,7 +15,7 @@ defmodule CombinationTest do
 
     combination = Combination.new(cards)
     assert combination.type == :high
-    assert Card.compare(combination.high_card, %Card{ranking: :king, suit: :diamond}) == :eq
+    assert Card.compare(combination.value, %Card{ranking: :king, suit: :diamond}) == :eq
 
     assert Enum.map(rest, &Enum.member?(combination.rest, &1)) |> Enum.all?(),
            "rests does not match"
