@@ -53,6 +53,11 @@ defmodule PokerHands.Card do
     Map.get(@suit, suit_str)
   end
 
+  @doc """
+    Compare two cards
+
+    returns :eq, :card1, :card2
+  """
   def compare(card1, card2) when is_bitstring(card1) and is_bitstring(card2) do
     card1 = PokerHands.Card.new(card1)
     card2 = PokerHands.Card.new(card2)
