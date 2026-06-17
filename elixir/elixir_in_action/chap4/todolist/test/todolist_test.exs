@@ -15,6 +15,7 @@ defmodule TodolistTest do
     ]
 
     todo_list = TodoList.new(entries)
+    IO.inspect(todo_list)
     assert todo_list.next_id == 4
 
     check =
