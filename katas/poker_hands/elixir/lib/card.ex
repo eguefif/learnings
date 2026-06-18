@@ -43,6 +43,10 @@ defmodule PokerHands.Card do
     %PokerHands.Card{ranking: card_to_ranking(card), suit: card_to_suit(card)}
   end
 
+  def to_value(%PokerHands.Card{ranking: r, suit: _} = _) do
+    Map.get(@values, r)
+  end
+
   defp card_to_ranking(card) do
     ranking_str = card |> String.graphemes() |> Enum.at(0)
     Map.get(@ranking, ranking_str)
