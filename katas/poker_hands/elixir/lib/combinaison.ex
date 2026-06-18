@@ -8,10 +8,12 @@ defmodule PokerHands.Combination do
   # - [ ] check one pair
   # - [ ] check two pair
   # - [ ] check triple
-  # - [ ] check straight
+  # - [x] check straight
   # - [ ] check full house
   # - [ ] check four of a kind
   # - [ ] check straight flush
+  # - [ ] Think of a way to place straight_flush, full_house and double pair after pair
+  # flush and straight. These function will only check if there is the right combination
 
   # Place the checks from the weakest to the strongest.
   # Next functions will take the combination and the whole cards
@@ -36,10 +38,11 @@ defmodule PokerHands.Combination do
     %Combination{type: [], value: nil, rest: cards, cards: cards}
     |> check_straight()
     |> check_flush()
+    |> check_straight_flush()
     |> check_four_of_a_kind(cards)
-    |> check_full_house(cards)
     |> check_three_of_a_kind(cards)
     |> check_pairs(cards)
+    |> check_full_house(cards)
     |> check_card_high()
     |> combine()
   end
@@ -48,6 +51,7 @@ defmodule PokerHands.Combination do
     cond do
       [:straight] == type -> %Combination{combination | type: :straight}
       [:high_card] == type -> %Combination{combination | type: :high_card}
+      [:flush] == type -> %Combination{combination | type: :flush}
       true -> combination
     end
   end
@@ -85,7 +89,12 @@ defmodule PokerHands.Combination do
       |> Enum.all?()
 
     if is_straight do
-      %Combination{type: [:straight | combination.type], value: get_high_card(cards), rest: []}
+      %Combination{
+        combination
+        | type: [:straight | combination.type],
+          value: get_high_card(cards),
+          rest: []
+      }
     else
       combination
     end
@@ -99,8 +108,19 @@ defmodule PokerHands.Combination do
     combination
   end
 
-  defp check_flush(%Combination{type: _, value: v, rest: rest, cards: cards} = _combination) do
-    _combination
+  defp check_flush(%Combination{type: type, value: _, rest: _, cards: cards} = combination) do
+    is_flush =
+      cards
+      |> Enum.map(&Card.to_suit/1)
+      |> Enum.frequencies()
+      |> Map.values()
+      |> then(&(&1 == [5]))
+
+    if is_flush do
+      %Combination{combination | type: [:flush | type], rest: [], value: get_high_card(cards)}
+    else
+      combination
+    end
   end
 
   defp sort_hands(cards, order \\ :asc) do
@@ -120,5 +140,9 @@ defmodule PokerHands.Combination do
       |> sort_hands(:desc)
 
     hd
+  end
+
+  defp check_straight_flush(combination) do
+    combination
   end
 end

@@ -32,4 +32,16 @@ defmodule CombinationTest do
     assert combination.value.suit == Card.new("6H").suit
     assert combination.rest == []
   end
+
+  test "should detect flush" do
+    cards =
+      ["2H", "3H", "4H", "5H", "TH"]
+      |> Enum.map(&Card.new/1)
+
+    combination = cards |> Combination.new()
+    assert combination.type == :flush
+    assert combination.value.ranking == Card.new("TH").ranking
+    assert combination.value.suit == Card.new("TH").suit
+    assert combination.rest == []
+  end
 end
