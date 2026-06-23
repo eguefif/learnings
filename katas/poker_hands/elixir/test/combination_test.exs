@@ -83,4 +83,36 @@ defmodule CombinationTest do
            end)
            |> Enum.all?() == true
   end
+
+  test "should detect one pair" do
+    cards =
+      ["5H", "KS", "5C", "9D", "TH"]
+      |> Enum.map(&Card.new/1)
+
+    combination = cards |> Combination.new()
+    assert combination.type == :pair
+    assert combination.value == Card.new("5H")
+
+    assert combination.rest
+           |> Enum.map(fn card ->
+             Enum.member?([Card.new("KS"), Card.new("9D"), Card.new("TH")], card)
+           end)
+           |> Enum.all?() == true
+  end
+
+  test "should detect two pairs" do
+    cards =
+      ["5H", "KS", "5C", "KC", "TH"]
+      |> Enum.map(&Card.new/1)
+
+    combination = cards |> Combination.new()
+    assert combination.type == :double_pair
+    assert combination.value == Card.new("KS")
+
+    assert combination.rest
+           |> Enum.map(fn card ->
+             Enum.member?([Card.new("TH")], card)
+           end)
+           |> Enum.all?() == true
+  end
 end

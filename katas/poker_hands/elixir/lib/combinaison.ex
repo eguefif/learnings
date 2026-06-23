@@ -5,7 +5,7 @@ defmodule PokerHands.Combination do
   defstruct [:type, :value, :rest, :cards]
 
   # TODO:
-  # - [ ] check triple
+  # - [x] check triple
   # - [ ] check one pair
   # - [ ] check two pair
   # - [ ] check full house
@@ -40,9 +40,9 @@ defmodule PokerHands.Combination do
     |> check_flush()
     |> check_straight_flush()
     |> check_four_of_a_kind()
-    |> check_three_of_a_kind(cards)
-    |> check_pairs(cards)
-    |> check_full_house(cards)
+    |> check_three_of_a_kind()
+    |> check_pairs()
+    |> check_full_house()
     |> check_card_high()
     |> combine()
   end
@@ -119,12 +119,12 @@ defmodule PokerHands.Combination do
     combination
   end
 
-  defp check_three_of_a_kind(%Combination{type: type} = combination, _cards)
+  defp check_three_of_a_kind(%Combination{type: type} = combination)
        when type != [] do
     combination
   end
 
-  defp check_three_of_a_kind(%Combination{rest: rest, cards: cards} = combination, _cards) do
+  defp check_three_of_a_kind(%Combination{rest: rest, cards: cards} = combination) do
     is_three_of_a_kind =
       rest
       |> Enum.map(& &1.ranking)
@@ -147,16 +147,44 @@ defmodule PokerHands.Combination do
     end
   end
 
-  defp combine(%Combination{type: type} = combination) do
-    [hd | _] = type
-    %Combination{combination | type: hd}
-  end
-
-  defp check_full_house(combination, _cards) do
+  defp check_pairs(%Combination{rest: rest} = combination) when rest < 2 do
     combination
   end
 
-  defp check_pairs(combination, _cards) do
+  defp check_pairs(%Combination{rest: rest, cards: cards} = combination) do
+    pairs =
+      rest
+      |> Enum.map(& &1.ranking)
+      |> Enum.frequencies()
+      |> Map.filter(fn {_, v} -> v == 2 end)
+      |> Map.keys()
+      |> Enum.map(fn key -> cards |> Enum.find(fn card -> card.ranking == key end) end)
+
+    case pairs do
+      [pair1, pair2] ->
+        value = if Card.to_value(pair1) > Card.to_value(pair2), do: pair1, else: pair2
+
+        rest =
+          cards
+          |> Enum.reject(fn card ->
+            Card.compare(card, pair1) == :eq or Card.compare(card, pair2) == :eq
+          end)
+
+        %Combination{type: [:double_pair], rest: rest, value: value}
+
+      [pair] ->
+        rest =
+          cards
+          |> Enum.reject(fn card -> Card.compare(card, pair) end)
+
+        %Combination{type: [:pair], rest: rest, value: pair}
+
+      _ ->
+        combination
+    end
+  end
+
+  defp check_full_house(combination) do
     combination
   end
 
@@ -172,6 +200,11 @@ defmodule PokerHands.Combination do
     rest = rest |> Enum.reverse()
 
     %Combination{type: [:high_card | combination.type], value: value, rest: rest, cards: cards}
+  end
+
+  defp combine(%Combination{type: type} = combination) do
+    [hd | _] = type
+    %Combination{combination | type: hd}
   end
 
   defp sort_hands(cards, order \\ :asc) do
