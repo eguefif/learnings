@@ -1,7 +1,7 @@
 defmodule PentoWeb.PageController do
   use PentoWeb, :controller
 
-  def home(conn, _params) when is_nil(conn.current_scope) do
+  def home(%Plug.Conn{assigns: %{current_scope: nil}} = conn, _params) do
     render(conn, :home)
   end
 
