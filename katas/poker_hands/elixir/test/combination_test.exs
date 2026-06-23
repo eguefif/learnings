@@ -67,4 +67,20 @@ defmodule CombinationTest do
     assert combination.value == Card.new("5H")
     assert combination.rest == [Card.new("TH")]
   end
+
+  test "should detect three of a kind" do
+    cards =
+      ["5H", "5S", "5C", "9D", "TH"]
+      |> Enum.map(&Card.new/1)
+
+    combination = cards |> Combination.new()
+    assert combination.type == :three_of_a_kind
+    assert combination.value == Card.new("5H")
+
+    assert combination.rest
+           |> Enum.map(fn card ->
+             Enum.member?([Card.new("9D"), Card.new("TH")], card)
+           end)
+           |> Enum.all?() == true
+  end
 end
