@@ -44,4 +44,27 @@ defmodule CombinationTest do
     assert combination.value.suit == Card.new("TH").suit
     assert combination.rest == []
   end
+
+  test "should detect straight flush" do
+    cards =
+      ["6H", "7H", "8H", "9H", "TH"]
+      |> Enum.map(&Card.new/1)
+
+    combination = cards |> Combination.new()
+    assert combination.type == :straight_flush
+    assert combination.value.ranking == Card.new("TH").ranking
+    assert combination.value.suit == Card.new("TH").suit
+    assert combination.rest == []
+  end
+
+  test "should detect four of a kind" do
+    cards =
+      ["5H", "5S", "5C", "5D", "TH"]
+      |> Enum.map(&Card.new/1)
+
+    combination = cards |> Combination.new()
+    assert combination.type == :four_of_a_kind
+    assert combination.value == Card.new("5H")
+    assert combination.rest == [Card.new("TH")]
+  end
 end
