@@ -140,7 +140,7 @@ defmodule PokerHands.Combination do
     case is_three_of_a_kind do
       {true, value} ->
         rest = cards |> Enum.reject(fn card -> card.ranking == value.ranking end)
-        %Combination{type: [:three_of_a_kind], value: value, rest: rest}
+        %Combination{combination | type: [:three_of_a_kind], value: value, rest: rest}
 
       _ ->
         combination
@@ -151,7 +151,7 @@ defmodule PokerHands.Combination do
     combination
   end
 
-  defp check_pairs(%Combination{rest: rest, cards: cards} = combination) do
+  defp check_pairs(%Combination{type: type, rest: rest, cards: cards} = combination) do
     pairs =
       rest
       |> Enum.map(& &1.ranking)
@@ -170,17 +170,35 @@ defmodule PokerHands.Combination do
             Card.compare(card, pair1) == :eq or Card.compare(card, pair2) == :eq
           end)
 
-        %Combination{type: [:double_pair], rest: rest, value: value}
+        %Combination{combination | type: [:double_pair | type], rest: rest, value: value}
 
       [pair] ->
         rest =
           cards
           |> Enum.reject(fn card -> Card.compare(card, pair) end)
 
-        %Combination{type: [:pair], rest: rest, value: pair}
+        %Combination{combination | type: [:pair | type], rest: rest, value: pair}
 
       _ ->
         combination
+    end
+  end
+
+  defp check_full_house(%Combination{type: type, cards: cards} = combination)
+       when length(type) == 2 do
+    if :pair in type && :three_of_a_kind in type do
+      value =
+        cards
+        |> Enum.map(& &1.ranking)
+        |> Enum.frequencies()
+        |> Map.filter(&(elem(&1, 1) == 3))
+        |> Map.keys()
+        |> Enum.map(fn key -> cards |> Enum.find(fn card -> card.ranking == key end) end)
+        |> Enum.at(0)
+
+      %Combination{combination | type: [:full_house], value: value}
+    else
+      combination
     end
   end
 

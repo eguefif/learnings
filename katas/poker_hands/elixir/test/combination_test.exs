@@ -115,4 +115,14 @@ defmodule CombinationTest do
            end)
            |> Enum.all?() == true
   end
+
+  test "should detect full house" do
+    cards =
+      ["5H", "KS", "5C", "KC", "5D"]
+      |> Enum.map(&Card.new/1)
+
+    combination = cards |> Combination.new()
+    assert combination.type == :full_house
+    assert combination.value == Card.new("5H")
+  end
 end
