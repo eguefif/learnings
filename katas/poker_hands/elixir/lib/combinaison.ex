@@ -2,24 +2,49 @@ defmodule PokerHands.Combination do
   alias PokerHands.Card
   alias PokerHands.Combination
 
+  # TODO: add tests to cover comparison
+
   defstruct [:type, :value, :rest, :cards]
 
-  # TODO:
-  # - [x] check triple
-  # - [ ] check one pair
-  # - [ ] check two pair
-  # - [ ] check full house
-  # - [x] check straight
-  # - [x] check four of a kind
-  # - [x] check straight flush
-  # - [x] Think of a way to place straight_flush, full_house and double pair after pair
-  # flush and straight. These function will only check if there is the right combination
+  @combination_ranking %{
+    :high_card => 0,
+    :pair => 1,
+    :double_pair => 2,
+    :three_of_a_kind => 3,
+    :straight => 5,
+    :flush => 6,
+    :full_house => 7,
+    :four_of_a_kind => 8,
+    :straight_flush => 9
+  }
 
-  # Place the checks from the weakest to the strongest.
-  # Next functions will take the combination and the whole cards
+  @doc """
+    Compare two combinations and return :black or :white
+  """
 
-  # Refactor, the remaining are used in case we have the same combination
-  # with the same high card.
+  def compare(%Combination{} = black, %Combination{} = white) do
+    value_black = combination_to_ranking_value(black)
+    value_white = combination_to_ranking_value(white)
+
+    cond do
+      value_black > value_white ->
+        :black
+
+      value_black < value_white ->
+        :white
+
+      value_black == value_white ->
+        # TODO: take color into account
+        case PokerHands.Card.compare(black.value, white.value) do
+          :card1 -> :black
+          :card2 -> :white
+        end
+    end
+  end
+
+  defp combination_to_ranking_value(%Combination{type: type} = _) do
+    Map.get(@combination_ranking, type)
+  end
 
   @doc """
     Create a new combination from a list of Card.
@@ -167,7 +192,7 @@ defmodule PokerHands.Combination do
         rest =
           cards
           |> Enum.reject(fn card ->
-            Card.compare(card, pair1) == :eq or Card.compare(card, pair2) == :eq
+            card.ranking == pair2.ranking or card.ranking == pair1.ranking
           end)
 
         %Combination{combination | type: [:double_pair | type], rest: rest, value: value}
@@ -196,7 +221,7 @@ defmodule PokerHands.Combination do
         |> Enum.map(fn key -> cards |> Enum.find(fn card -> card.ranking == key end) end)
         |> Enum.at(0)
 
-      %Combination{combination | type: [:full_house], value: value}
+      %Combination{combination | type: [:full_house], value: value, rest: []}
     else
       combination
     end

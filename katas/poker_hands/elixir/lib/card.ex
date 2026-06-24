@@ -34,6 +34,13 @@ defmodule PokerHands.Card do
     :as => 14
   }
 
+  @suit_value %{
+    :spades => 3,
+    :heart => 2,
+    :diamond => 1,
+    :club => 0
+  }
+
   @doc """
     Create a new Card struct from a string.
 
@@ -69,20 +76,27 @@ defmodule PokerHands.Card do
   def compare(card1, card2) when is_bitstring(card1) and is_bitstring(card2) do
     card1 = PokerHands.Card.new(card1)
     card2 = PokerHands.Card.new(card2)
+
     PokerHands.Card.compare(card1, card2)
   end
 
   def compare(
-        %PokerHands.Card{ranking: r1, suit: _} = _,
-        %PokerHands.Card{ranking: r2, suit: _} = _
+        %PokerHands.Card{ranking: r1, suit: _} = combination1,
+        %PokerHands.Card{ranking: r2, suit: _} = combination2
       ) do
-    v1 = Map.fetch!(@values, r1)
-    v2 = Map.fetch!(@values, r2)
+    v1 = Map.get(@values, r1)
+    v2 = Map.get(@values, r2)
 
     cond do
-      v1 == v2 -> :eq
+      v1 == v2 -> PokerHands.Card.compare_suit(combination1, combination2)
       v1 > v2 -> :card1
       v1 < v2 -> :card2
     end
+  end
+
+  def compare_suit(%PokerHands.Card{suit: suit1} = _, %PokerHands.Card{suit: suit2} = _) do
+    value1 = Map.get(@suit_value, suit1)
+    value2 = Map.get(@suit_value, suit2)
+    if value1 > value2, do: :card1, else: :card2
   end
 end
