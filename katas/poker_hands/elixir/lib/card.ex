@@ -81,14 +81,14 @@ defmodule PokerHands.Card do
   end
 
   def compare(
-        %PokerHands.Card{ranking: r1, suit: _} = combination1,
-        %PokerHands.Card{ranking: r2, suit: _} = combination2
+        %PokerHands.Card{ranking: r1, suit: _} = _,
+        %PokerHands.Card{ranking: r2, suit: _} = _
       ) do
     v1 = Map.get(@values, r1)
     v2 = Map.get(@values, r2)
 
     cond do
-      v1 == v2 -> PokerHands.Card.compare_suit(combination1, combination2)
+      v1 == v2 -> :eq
       v1 > v2 -> :card1
       v1 < v2 -> :card2
     end

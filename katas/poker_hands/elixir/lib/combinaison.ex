@@ -34,11 +34,32 @@ defmodule PokerHands.Combination do
         :white
 
       value_black == value_white ->
-        # TODO: take color into account
         case PokerHands.Card.compare(black.value, white.value) do
           :card1 -> :black
           :card2 -> :white
+          :eq -> compare_rest(black.rest, white.rest)
         end
+    end
+  end
+
+  defp compare_rest(black_cards, white_cards) when length(black_cards) == 1 do
+    [black_card] = black_cards
+    [white_card] = white_cards
+
+    case PokerHands.Card.compare_suit(black_card, white_card) do
+      :card1 -> :black
+      :card2 -> :white
+    end
+  end
+
+  defp compare_rest(black_cards, white_cards) do
+    [black_card | black_tail] = black_cards
+    [white_card | white_tail] = white_cards
+
+    case PokerHands.Card.compare(black_card, white_card) do
+      :eq -> compare_rest(black_tail, white_tail)
+      :card1 -> :black
+      :card2 -> :white
     end
   end
 

@@ -138,5 +138,26 @@ defmodule CombinationTest do
 
       assert Combination.compare(black, white) == :white
     end
+
+    test "should return white win Black: 2H 4S 4C 2D 4H  White: 2S 8S AS QS 3S" do
+      black = ["2H", "4S", "4C", "2D", "4H"] |> Enum.map(&Card.new/1) |> Combination.new()
+      white = ["2S", "8S", "AS", "QS", "3S"] |> Enum.map(&Card.new/1) |> Combination.new()
+
+      assert Combination.compare(black, white) == :black
+    end
+
+    test "should return white win Black: 2H 3D 5S 9C KD  White: 2C 3H 4S 8C KH" do
+      black = ["2H", "3D", "5S", "9C", "KD"] |> Enum.map(&Card.new/1) |> Combination.new()
+      white = ["2C", "3H", "4S", "8C", "KH"] |> Enum.map(&Card.new/1) |> Combination.new()
+
+      assert Combination.compare(black, white) == :black
+    end
+
+    test "should return white win Black: 2H 3D 5S 9C KD  White: 2D 3H 5C 9S KH" do
+      black = ["2H", "3D", "5S", "9C", "KD"] |> Enum.map(&Card.new/1) |> Combination.new()
+      white = ["2C", "3H", "5C", "9S", "KH"] |> Enum.map(&Card.new/1) |> Combination.new()
+
+      assert Combination.compare(black, white) == :white
+    end
   end
 end

@@ -8,7 +8,7 @@ defmodule CardTest do
         {card1, card2, expect} <- [
           {"2C", "3H", :card2},
           {"AD", "KS", :card1},
-          {"TH", "TC", :card1}
+          {"TH", "TC", :eq}
         ],
         do: %{card1: card1, card2: card2, expect: expect}
       )
