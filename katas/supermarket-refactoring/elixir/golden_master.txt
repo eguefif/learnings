@@ -1,0 +1,3 @@
+Receipt
+Item Product apples(kilo), quantity: 2.5, price: 1.99, total_price: 4.975
+Total: 4.975

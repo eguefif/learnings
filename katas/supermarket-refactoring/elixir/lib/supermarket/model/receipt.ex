@@ -24,4 +24,13 @@ defmodule Supermarket.Model.Receipt do
 
     item_total + discount_total
   end
+
+  defimpl String.Chars, for: Supermarket.Model.Receipt do
+    def to_string(receipt) do
+      items = Enum.join(receipt.items, ", ")
+      discounts = Enum.join(receipt.discounts, "\n\t")
+      total = Supermarket.Model.Receipt.total_price(receipt)
+      "Receipt\n#{items}\n#{discounts}Total: #{total}"
+    end
+  end
 end

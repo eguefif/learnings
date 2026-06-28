@@ -8,7 +8,8 @@ defmodule Supermarket.MixProject do
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      elixirc_paths: elixirc_paths(Mix.env())
+      elixirc_paths: elixirc_paths(Mix.env()),
+      aliases: aliases()
     ]
   end
 
@@ -29,4 +30,11 @@ defmodule Supermarket.MixProject do
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_env), do: ["lib"]
+
+  defp aliases() do
+    [
+      save_gm: "run -e \"Supermarket.save_golden_master()\"",
+      gm: "run -e \"Supermarket.check_golden_master()\""
+    ]
+  end
 end

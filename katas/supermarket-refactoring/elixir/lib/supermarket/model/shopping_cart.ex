@@ -1,5 +1,4 @@
 defmodule Supermarket.Model.ShoppingCart do
-  require IEx
   alias Supermarket.Model.Discount
   alias Supermarket.Model.ProductQuantity
   alias Supermarket.Model.Receipt
