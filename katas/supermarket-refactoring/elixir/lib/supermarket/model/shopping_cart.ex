@@ -30,6 +30,12 @@ defmodule Supermarket.Model.ShoppingCart do
     |> Enum.reduce(receipt, fn p, receipt ->
       quantity = cart.product_quantities[p]
 
+      # Deal
+      # - :three_for_two
+      # - :two_for_amount
+      # - :five_for_amount
+      # - :three_for_amount
+      # - :ten_percent_discount
       if Map.has_key?(offers, p) do
         offer = offers[p]
         unit_price = SupermarketCatalog.get_unit_price(catalog, p)

@@ -1,3 +1,6 @@
 Receipt
-Item Product apples(kilo), quantity: 2.5, price: 1.99, total_price: 4.975
-Total: 4.975
+Item Product apples(kilo), quantity: 2.5, price: 1554.42, total_price: 3886.05, Item Product sofa(each), quantity: 5, price: 10.4, total_price: 52.0, Item Product apples(kilo), quantity: 5, price: 1554.42, total_price: 7772.1, Item Product chair(each), quantity: 1, price: 33.3, total_price: 33.3, Item Product apples(kilo), quantity: 2, price: 1554.42, total_price: 3108.84, Item Product table(each), quantity: 2, price: 55.3, total_price: 110.6, Item Product pants(each), quantity: 3, price: 23.3, total_price: 69.9, Item Product apples(kilo), quantity: 15.5, price: 1554.42, total_price: 24093.510000000002, Item Product apples(kilo), quantity: 2.5, price: 1554.42, total_price: 3886.05, Item Product apples(kilo), quantity: 1.5, price: 1554.42, total_price: 2331.63, Item Product rice(kilo), quantity: 4.5, price: 5.3, total_price: 23.849999999999998
+Discount `5 for 5000.32` for Product sofa(each): 4948.32
+	Discount `10.0% off` for Product rice(kilo): -2.385
+	Discount `3 for 2` for Product pants(each): -23.300000000000004
+	Discount `5 for 5000.32` for Product apples(kilo): -13858.900000000001Total: 36431.565

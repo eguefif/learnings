@@ -6,7 +6,7 @@ defmodule Supermarket.Model.Teller do
 
   defstruct [:catalog, :offers]
 
-  def new(%Supermarket.Model.Catalog{} = catalog) do
+  def new(catalog) do
     %__MODULE__{catalog: catalog, offers: %{}}
   end
 
